@@ -1,1 +1,67 @@
+#include <Servo.h>
+Servo servo1;
+int trigPin = 4;
+int echoPin = 5;
+long distance;
+long duration;
+char data;
+int value;
+void ultrasonic();
+void setup() {
+  servo1.attach(9);
+  Serial.begin(9600);
+  pinMode(13, OUTPUT);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+//  pinMode(A3, INPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7,LOW);
+}
 
+void loop() {
+  if(Serial.available()>0){
+    data = Serial.read();
+    Serial.println(data);
+    if(data == 'o'){
+      digitalWrite(13, HIGH);
+    }
+    if(data == 'f'){
+      digitalWrite(13, LOW);
+    }
+    if(data == 'c'){
+      digitalWrite(6, HIGH);
+      digitalWrite(7, LOW);
+    }
+    if(data == 'd'){
+      digitalWrite(6,LOW);
+      digitalWrite(7,HIGH);
+    }
+    if(data == 's'){
+      digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+    }
+  }
+  Serial.println(distance);
+  ultrasonic();
+  dustbin();
+}
+
+void dustbin(){
+  if(distance >30){
+    servo1.write(230);
+  }
+  if(distance < 30){
+    servo1.write(110);
+    //delay(50);
+  }
+  //delay(1000);
+}
+void ultrasonic(){
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration*0.034/2;
+ }
